@@ -11,7 +11,7 @@ import 'utils/list_equality.dart';
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  GetStorage g;
+  late GetStorage g;
 
   const channel = MethodChannel('plugins.flutter.io/path_provider');
   void setUpMockChannels(MethodChannel channel) {
@@ -33,7 +33,7 @@ void main() async {
   });
 
   test('write, read listen, e removeListen', () async {
-    String valueListen = "";
+    String? valueListen = "";
     g.write('test', 'a');
 
     final removeListen = g.listen(() {
@@ -103,12 +103,12 @@ void main() async {
   });
 
   test('newContainer', () async {
-    final container1 = await GetStorage.init('container1');
+    final container1 = await GetStorage.init('container1')!;
     await GetStorage.init('newContainer');
     final newContainer = GetStorage('newContainer');
 
     /// Attempting to start a Container that has already started must return the container already created.
-    var container2 = await GetStorage.init();
+    var container2 = await GetStorage.init()!;
     expect(container1 == container2, true);
 
     newContainer.write('test', '1234');
@@ -117,8 +117,8 @@ void main() async {
   });
 
   group('get keys/values', () {
-    Function(Iterable, List) eq =
-        (i, l) => const ListEquality().equals(i.toList(), l);
+    Function(Iterable?, List) eq =
+        (i, l) => const ListEquality().equals(i!.toList(), l);
 
     test('should return their stored dynamic values', () {
       expect(eq(g.getKeys().toList(), []), true);

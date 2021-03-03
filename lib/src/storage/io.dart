@@ -9,16 +9,16 @@ import '../value.dart';
 class StorageImpl {
   StorageImpl(this.fileName, [this.path]);
 
-  final String path, fileName;
+  final String? path, fileName;
 
   final ValueStorage<Map<String, dynamic>> subject =
       ValueStorage<Map<String, dynamic>>(<String, dynamic>{});
 
-  RandomAccessFile _randomAccessfile;
+  RandomAccessFile? _randomAccessfile;
 
   void clear() async {
     subject
-      ..value.clear()
+      ..value!.clear()
       ..changeValue("", null);
   }
 
@@ -31,12 +31,12 @@ class StorageImpl {
   Future<void> flush() async {
     final buffer = utf8.encode(json.encode(subject.value));
     final length = buffer.length;
-    RandomAccessFile _file = await _getRandomFile();
+    RandomAccessFile _file = await (_getRandomFile() as FutureOr<RandomAccessFile>);
 
     _randomAccessfile = await _file.lock();
-    _randomAccessfile = await _randomAccessfile.setPosition(0);
-    _randomAccessfile = await _randomAccessfile.writeFrom(buffer);
-    _randomAccessfile = await _randomAccessfile.truncate(length);
+    _randomAccessfile = await _randomAccessfile!.setPosition(0);
+    _randomAccessfile = await _randomAccessfile!.writeFrom(buffer);
+    _randomAccessfile = await _randomAccessfile!.truncate(length);
     _madeBackup();
   }
 
@@ -49,40 +49,40 @@ class StorageImpl {
     );
   }
 
-  T read<T>(String key) {
-    return subject.value[key] as T;
+  T? read<T>(String key) {
+    return subject.value![key] as T?;
   }
 
   T getKeys<T>() {
-    return subject.value.keys as T;
+    return subject.value!.keys as T;
   }
 
   T getValues<T>() {
-    return subject.value.values as T;
+    return subject.value!.values as T;
   }
 
-  Future<void> init([Map<String, dynamic> initialData]) async {
+  Future<void> init([Map<String, dynamic>? initialData]) async {
     subject.value = initialData ?? <String, dynamic>{};
 
-    RandomAccessFile _file = await _getRandomFile();
+    RandomAccessFile _file = await (_getRandomFile() as FutureOr<RandomAccessFile>);
     return _file.lengthSync() == 0 ? flush() : _readFile();
   }
 
   void remove(String key) {
     subject
-      ..value.remove(key)
+      ..value!.remove(key)
       ..changeValue(key, null);
   }
 
   void write(String key, dynamic value) {
     subject
-      ..value[key] = value
+      ..value![key] = value
       ..changeValue(key, value);
   }
 
   Future<void> _readFile() async {
     try {
-      RandomAccessFile _file = await _getRandomFile();
+      RandomAccessFile _file = await (_getRandomFile() as FutureOr<RandomAccessFile>);
       _file = await _file.setPosition(0);
       final buffer = new Uint8List(await _file.length());
       await _file.readInto(buffer);
@@ -98,7 +98,7 @@ class StorageImpl {
         subject.value = {};
       } else {
         try {
-          subject.value = json.decode(content) as Map<String, dynamic>;
+          subject.value = json.decode(content) as Map<String, dynamic>?;
         } catch (e) {
           Get.log('Can not recover Corrupted box', isError: true);
           subject.value = {};
@@ -108,7 +108,7 @@ class StorageImpl {
     }
   }
 
-  Future<RandomAccessFile> _getRandomFile() async {
+  Future<RandomAccessFile?> _getRandomFile() async {
     if (_randomAccessfile != null) return _randomAccessfile;
     final fileDb = await _getFile(false);
     _randomAccessfile = await fileDb.open(mode: FileMode.append);

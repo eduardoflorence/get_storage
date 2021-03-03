@@ -21,7 +21,7 @@ class App extends StatelessWidget {
     final controller = Get.put(Controller());
     return SimpleBuilder(builder: (_) {
       return MaterialApp(
-        theme: controller.theme,
+        theme: controller!.theme,
         home: Scaffold(
           appBar: AppBar(title: Text("Get Storage")),
           body: Center(
