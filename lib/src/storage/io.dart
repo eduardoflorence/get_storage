@@ -22,7 +22,7 @@ class StorageImpl {
       ..changeValue("", null);
   }
 
-  Future<void> deleteBox() async {
+  Future<List<FileSystemEntity>> deleteBox() async {
     final box = await _fileDb(false);
     final backup = await _fileDb(true);
     return Future.wait([box.delete(), backup.delete()]);
@@ -31,7 +31,8 @@ class StorageImpl {
   Future<void> flush() async {
     final buffer = utf8.encode(json.encode(subject.value));
     final length = buffer.length;
-    RandomAccessFile _file = await (_getRandomFile() as FutureOr<RandomAccessFile>);
+    RandomAccessFile _file =
+        await (_getRandomFile() as FutureOr<RandomAccessFile>);
 
     _randomAccessfile = await _file.lock();
     _randomAccessfile = await _randomAccessfile!.setPosition(0);
@@ -64,7 +65,8 @@ class StorageImpl {
   Future<void> init([Map<String, dynamic>? initialData]) async {
     subject.value = initialData ?? <String, dynamic>{};
 
-    RandomAccessFile _file = await (_getRandomFile() as FutureOr<RandomAccessFile>);
+    RandomAccessFile _file =
+        await (_getRandomFile() as FutureOr<RandomAccessFile>);
     return _file.lengthSync() == 0 ? flush() : _readFile();
   }
 
@@ -82,7 +84,8 @@ class StorageImpl {
 
   Future<void> _readFile() async {
     try {
-      RandomAccessFile _file = await (_getRandomFile() as FutureOr<RandomAccessFile>);
+      RandomAccessFile _file =
+          await (_getRandomFile() as FutureOr<RandomAccessFile>);
       _file = await _file.setPosition(0);
       final buffer = new Uint8List(await _file.length());
       await _file.readInto(buffer);
