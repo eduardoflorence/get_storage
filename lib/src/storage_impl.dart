@@ -37,9 +37,6 @@ class GetStorage {
   /// Start the storage drive. Importate: use await before calling this api, or side effects will happen.
   static Future<bool>? init([String container = 'GetStorage']) {
     WidgetsFlutterBinding.ensureInitialized();
-    if (container == null) {
-      throw 'key can not be null';
-    }
     return GetStorage(container).initStorage;
   }
 

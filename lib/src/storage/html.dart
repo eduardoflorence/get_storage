@@ -24,7 +24,7 @@ class StorageImpl {
   }
 
   Future<bool> _exists() async {
-    return localStorage != null && localStorage.containsKey(fileName);
+    return localStorage.containsKey(fileName);
   }
 
   Future<void> flush() {
@@ -83,7 +83,7 @@ class StorageImpl {
       },
     );
     if (dataFromLocal != null) {
-      subject.value = json?.decode(dataFromLocal.value) as Map<String, dynamic>?;
+      subject.value = json.decode(dataFromLocal.value) as Map<String, dynamic>?;
     } else {
       await _writeToStorage(<String, dynamic>{});
     }
