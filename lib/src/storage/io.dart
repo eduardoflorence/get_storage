@@ -31,9 +31,8 @@ class StorageImpl {
   Future<void> flush() async {
     final buffer = utf8.encode(json.encode(subject.value));
     final length = buffer.length;
-    /* RandomAccessFile _file =
-        await (_getRandomFile() as FutureOr<RandomAccessFile>); */
-    RandomAccessFile _file = await _getRandomFile();
+    RandomAccessFile _file =
+        await (_getRandomFile() as FutureOr<RandomAccessFile>);
 
     _randomAccessfile = await _file.lock();
     _randomAccessfile = await _randomAccessfile!.setPosition(0);
@@ -66,9 +65,8 @@ class StorageImpl {
   Future<void> init([Map<String, dynamic>? initialData]) async {
     subject.value = initialData ?? <String, dynamic>{};
 
-    /* RandomAccessFile _file =
-        await (_getRandomFile() as FutureOr<RandomAccessFile>); */
-    RandomAccessFile _file = await _getRandomFile();
+    RandomAccessFile _file =
+        await (_getRandomFile() as FutureOr<RandomAccessFile>);
     return _file.lengthSync() == 0 ? flush() : _readFile();
   }
 
@@ -88,8 +86,8 @@ class StorageImpl {
     try {
       /* RandomAccessFile _file =
           await (_getRandomFile() as FutureOr<RandomAccessFile>); */
-      RandomAccessFile _file = await _getRandomFile();
-      _file = await _file.setPosition(0);
+      RandomAccessFile? _file = await _getRandomFile();
+      _file = await _file!.setPosition(0);
       final buffer = new Uint8List(await _file.length());
       await _file.readInto(buffer);
       subject.value = json.decode(utf8.decode(buffer));
@@ -114,12 +112,12 @@ class StorageImpl {
     }
   }
 
-  Future<RandomAccessFile> _getRandomFile() async {
+  Future<RandomAccessFile?> _getRandomFile() async {
     if (_randomAccessfile != null) return _randomAccessfile!;
     final fileDb = await _getFile(false);
     _randomAccessfile = await fileDb.open(mode: FileMode.append);
 
-    return _randomAccessfile!;
+    return _randomAccessfile;
   }
 
   Future<File> _getFile(bool isBackup) async {
