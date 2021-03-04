@@ -14,7 +14,7 @@ class StorageImpl {
   final ValueStorage<Map<String, dynamic>> subject =
       ValueStorage<Map<String, dynamic>>(<String, dynamic>{});
 
-  late RandomAccessFile? _randomAccessfile;
+  RandomAccessFile? _randomAccessfile;
 
   void clear() async {
     subject
